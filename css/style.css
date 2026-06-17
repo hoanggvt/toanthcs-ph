@@ -1,0 +1,15 @@
+/* css/style.css */
+body { font-family: 'Inter', sans-serif; }
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+
+.tab-active { border-bottom: 2px solid #2563eb; color: #2563eb; font-weight: 700; }
+.tab-inactive { color: #64748b; font-weight: 500; }
+.tab-inactive:hover { color: #334155; }
+
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+th.sortable { cursor: pointer; user-select: none; transition: background-color 0.2s; }
+th.sortable:hover { background-color: #f1f5f9; }

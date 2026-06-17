@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math4s - Dashboard Quản Trị Hệ Thống</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-slate-50 text-slate-900 antialiased min-h-screen flex flex-col">
+
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-50 px-4 md:px-6 py-3 md:py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-sm">
+        <a href="https://blogtailieu.com" class="flex items-center gap-3">
+            <div class="bg-blue-600 text-white p-2 rounded-xl h-9 w-9 md:h-10 md:w-10 flex items-center justify-center font-bold text-base md:text-lg shadow-sm">M4S</div>
+            <div>
+                <h1 class="text-base md:text-lg font-bold tracking-tight text-slate-800">BLOGTAILIEU.COM</h1>
+                <p class="text-[10px] md:text-xs text-slate-500 font-medium">Hệ thống Tra cứu &amp; Phân tích Dữ liệu</p>
+            </div>
+        </a>
+        <div id="auth-status" class="flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 bg-slate-100 rounded-lg text-[10px] md:text-xs font-semibold text-slate-600">
+            <i class="fa-solid fa-spinner animate-spin text-blue-600"></i> Đang kết nối...
+        </div>
+    </header>
+
+    <main class="w-full max-w-7xl mx-auto p-3 md:p-6 space-y-4 md:space-y-6 flex-1">
+        
+        <div class="flex gap-4 md:gap-6 border-b border-slate-200 overflow-x-auto hide-scrollbar whitespace-nowrap">
+            <button id="nav-students" class="pb-2 md:pb-3 px-2 tab-active transition-colors text-sm md:text-base"><i class="fa-solid fa-user-graduate mr-1.5"></i> Tra cứu Học sinh</button>
+            <button id="nav-rooms" class="pb-2 md:pb-3 px-2 tab-inactive transition-colors text-sm md:text-base"><i class="fa-solid fa-door-open mr-1.5"></i> Quản lý Phòng Thi</button>
+        </div>
+
+        <div id="view-students" class="space-y-4 md:space-y-6">
+            <section class="bg-white border border-slate-200 p-4 md:p-5 rounded-xl md:rounded-2xl shadow-sm">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4 items-end">
+                    <div>
+                        <label class="block text-[10px] md:text-xs font-bold text-slate-600 uppercase mb-1 md:mb-2">Tên học sinh</label>
+                        <input id="search-name" type="text" placeholder="Nhập họ tên..." class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg md:rounded-xl text-sm focus:outline-none focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] md:text-xs font-bold text-slate-600 uppercase mb-1 md:mb-2">Phân loại lớp</label>
+                        <select id="search-class" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg md:rounded-xl text-sm focus:outline-none focus:border-blue-500">
+                            <option value="all">Tất cả lớp</option>
+                        </select>
+                    </div>
+                    <button id="btn-search" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm rounded-lg md:rounded-xl py-2 md:py-2.5 shadow-sm transition-colors cursor-pointer mt-2 md:mt-0">
+                        <i class="fa-solid fa-magnifying-glass mr-1"></i> Tra cứu
+                    </button>
+                </div>
+            </section>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
+                <div class="bg-white border border-slate-200 rounded-xl md:rounded-2xl shadow-sm p-3 md:p-4 flex flex-col h-[400px] md:h-[600px]">
+                    <div class="flex justify-between items-center border-b border-slate-100 pb-2 md:pb-3 mb-2 md:mb-3">
+                        <h3 class="text-xs md:text-sm font-bold text-slate-500 uppercase">Kết quả</h3>
+                        <span id="student-count" class="bg-slate-100 text-slate-600 text-[10px] md:text-xs font-bold px-2 py-0.5 rounded-full">0</span>
+                    </div>
+                    <div id="student-list" class="flex-1 overflow-y-auto space-y-2 pr-1"></div>
+                </div>
+
+                <div class="lg:col-span-2 space-y-4 md:space-y-6">
+                    <div id="empty-detail-state" class="bg-white border border-slate-200 rounded-xl md:rounded-2xl p-8 md:p-12 text-center text-slate-400 h-full flex flex-col justify-center min-h-[300px]">
+                        <i class="fa-solid fa-chart-pie text-3xl md:text-4xl mb-3 text-slate-200"></i>
+                        <span class="text-sm">Chọn học sinh để xem lịch sử nộp bài.</span>
+                    </div>
+
+                    <div id="detail-pane" class="hidden space-y-4 md:space-y-6">
+                        <div class="grid grid-cols-3 gap-2 md:gap-4">
+                            <div class="bg-blue-600 p-3 md:p-4 rounded-xl md:rounded-2xl text-white shadow-sm flex flex-col justify-center">
+                                <div class="text-[10px] md:text-xs font-bold uppercase text-blue-100">Điểm TB</div>
+                                <div id="stat-avg" class="text-lg md:text-3xl font-bold mt-1">0.0</div>
+                            </div>
+                            <div class="bg-amber-500 p-3 md:p-4 rounded-xl md:rounded-2xl text-white shadow-sm flex flex-col justify-center">
+                                <div class="text-[10px] md:text-xs font-bold uppercase text-amber-100">Cao Nhất</div>
+                                <div id="stat-max" class="text-lg md:text-3xl font-bold mt-1">0.0</div>
+                            </div>
+                            <div class="bg-emerald-600 p-3 md:p-4 rounded-xl md:rounded-2xl text-white shadow-sm flex flex-col justify-center">
+                                <div class="text-[10px] md:text-xs font-bold uppercase text-emerald-100">Lượt Nộp</div>
+                                <div id="stat-count" class="text-lg md:text-3xl font-bold mt-1">0</div>
+                            </div>
+                        </div>
+                        <div class="bg-white border border-slate-200 rounded-xl md:rounded-2xl shadow-sm overflow-hidden flex flex-col h-[400px] md:h-[460px]">
+                            <div class="bg-slate-50 border-b border-slate-100 p-3 md:p-4">
+                                <h3 class="font-bold text-sm text-slate-700 uppercase" id="student-info-lbl">Lịch sử bài làm</h3>
+                            </div>
+                            <div class="overflow-x-auto flex-1">
+                                <table class="w-full text-left text-sm border-collapse min-w-[500px]">
+                                    <thead class="bg-slate-100/70 sticky top-0 z-10">
+                                        <tr class="text-slate-500 text-[10px] md:text-xs font-bold uppercase">
+                                            <th class="p-2 md:p-3 whitespace-nowrap">Mã phòng / Đề</th>
+                                            <th class="p-2 md:p-3 whitespace-nowrap">Hành vi</th>
+                                            <th class="p-2 md:p-3 whitespace-nowrap">Ngày nộp</th>
+                                            <th class="p-2 md:p-3 text-right whitespace-nowrap">Điểm (%)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="history-rows" class="divide-y divide-slate-100 text-slate-600"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-rooms" class="hidden space-y-4 md:space-y-6">
+            <section class="bg-white border border-slate-200 p-4 md:p-5 rounded-xl md:rounded-2xl shadow-sm flex flex-col sm:flex-row flex-wrap gap-3 md:gap-4 items-end">
+                <div class="w-full sm:flex-1 sm:min-w-[150px]">
+                    <label class="block text-[10px] md:text-xs font-bold text-slate-600 uppercase mb-1 md:mb-2">Trạng thái phòng</label>
+                    <select id="room-status-filter" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-blue-500">
+                        <option value="all">Tất cả</option>
+                        <option value="active">Đang mở (Active)</option>
+                        <option value="waiting">Chờ thi (Waiting)</option>
+                        <option value="closed">Đã đóng (Closed)</option>
+                    </select>
+                </div>
+                <div class="w-full sm:flex-1 sm:min-w-[150px]">
+                    <label class="block text-[10px] md:text-xs font-bold text-slate-600 uppercase mb-1 md:mb-2">Ngày tạo</label>
+                    <input type="date" id="room-date-filter" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-blue-500">
+                </div>
+                <button id="btn-load-rooms" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm rounded-lg px-6 py-2 shadow-sm transition-colors mt-2 sm:mt-0">
+                    <i class="fa-solid fa-rotate mr-1"></i> Quét phòng
+                </button>
+            </section>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+                <div class="bg-white border border-slate-200 rounded-xl md:rounded-2xl shadow-sm flex flex-col h-[400px] md:h-[650px] overflow-hidden">
+                    <div class="p-3 md:p-4 border-b border-slate-100 bg-slate-50">
+                        <h3 class="font-bold text-xs md:text-sm text-slate-700 uppercase"><i class="fa-solid fa-server mr-1"></i> Danh sách Phòng</h3>
+                    </div>
+                    <div id="rooms-list" class="flex-1 overflow-y-auto p-3 md:p-4 space-y-2 md:space-y-3"></div>
+                    <div class="p-2 md:p-3 border-t border-slate-100 flex justify-between items-center bg-slate-50">
+                        <button id="btn-prev-room" class="px-3 py-1 text-sm bg-white border border-slate-200 rounded hover:bg-slate-100 disabled:opacity-50"><i class="fa-solid fa-chevron-left"></i></button>
+                        <span id="room-page-info" class="text-[10px] md:text-xs font-bold text-slate-500">Trang 1</span>
+                        <button id="btn-next-room" class="px-3 py-1 text-sm bg-white border border-slate-200 rounded hover:bg-slate-100 disabled:opacity-50"><i class="fa-solid fa-chevron-right"></i></button>
+                    </div>
+                </div>
+
+                <div class="bg-white border border-slate-200 rounded-xl md:rounded-2xl shadow-sm h-[500px] md:h-[650px] flex flex-col overflow-hidden">
+                    <div class="p-3 md:p-4 border-b border-slate-200 bg-blue-50/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                        <div>
+                            <h3 id="room-detail-title" class="font-bold text-sm text-blue-800 uppercase">Bài nộp (Submissions)</h3>
+                            <p id="room-detail-subtitle" class="text-[10px] md:text-xs text-blue-600 mt-0.5">Chọn phòng để xem danh sách</p>
+                        </div>
+                        <div id="room-link-container" class="hidden flex flex-wrap gap-2">
+                            <a id="btn-thi-ngay" href="#" target="_blank" class="bg-blue-600 border border-blue-600 text-white hover:bg-blue-700 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors shadow-sm whitespace-nowrap">
+                                <i class="fa-solid fa-play mr-1"></i> Thi ngay
+                            </a>
+                            <button id="btn-copy-link" class="bg-white border border-blue-200 text-blue-600 hover:bg-blue-50 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors shadow-sm whitespace-nowrap">
+                                <i class="fa-solid fa-link mr-1"></i> Copy Link
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="px-3 md:px-4 py-2 border-b border-slate-100 bg-white">
+                        <div class="relative">
+                            <i class="fa-solid fa-search absolute left-3 top-2 text-slate-400 text-xs"></i>
+                            <input type="text" id="room-search-student" oninput="window.renderRoomSubmissionsTable()" placeholder="Lọc nhanh tên học sinh..." class="w-full pl-8 pr-3 py-1.5 text-xs border border-slate-200 rounded-lg focus:outline-none focus:border-blue-500">
+                        </div>
+                    </div>
+
+                    <div class="flex-1 overflow-x-auto relative">
+                        <table class="w-full text-left text-sm border-collapse min-w-[500px]">
+                            <thead class="bg-slate-50 sticky top-0 z-10">
+                                <tr class="text-slate-500 text-[10px] md:text-xs font-bold uppercase border-b border-slate-200">
+                                    <th class="p-2 md:p-3 sortable whitespace-nowrap" data-sort="name" onclick="window.sortRoomData('name')">
+                                        Học sinh <i class="fa-solid fa-sort ml-1 text-slate-300"></i>
+                                    </th>
+                                    <th class="p-2 md:p-3 sortable whitespace-nowrap" data-sort="class" onclick="window.sortRoomData('class')">
+                                        Lớp <i class="fa-solid fa-sort ml-1 text-slate-300"></i>
+                                    </th>
+                                    <th class="p-2 md:p-3 whitespace-nowrap">Hành vi</th>
+                                    <th class="p-2 md:p-3 text-right sortable whitespace-nowrap" data-sort="score" onclick="window.sortRoomData('score')">
+                                        Điểm (%) <i class="fa-solid fa-sort ml-1 text-slate-300"></i>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="room-students-rows" class="divide-y divide-slate-100">
+                                <tr><td colspan="4" class="p-8 text-center text-slate-400">Chưa có dữ liệu.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>
